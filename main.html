@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Product List</title>
+  <style>
+    /* Reset some default styling */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    /* Body styling */
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f9;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    /* Container for products */
+    .product-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 20px;
+      justify-items: center;
+    }
+
+    /* Product card styling */
+    .product {
+      background-color: #fff;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+      width: 100%;
+      max-width: 250px;
+      text-align: center;
+      padding: 10px;
+      transition: transform 0.3s ease;
+    }
+
+    .product:hover {
+      transform: translateY(-10px);
+    }
+
+    .product img {
+      width: 100%;
+      max-height: 200px;
+      object-fit: contain;
+      margin-bottom: 15px;
+    }
+
+    .product h3 {
+      font-size: 1.2rem;
+      color: #333;
+      margin-bottom: 10px;
+    }
+
+    .product p {
+      font-size: 1rem;
+      color: #888;
+      margin-bottom: 15px;
+    }
+
+    /* Price styling */
+    .product .price {
+      font-size: 1.4rem;
+      color: #ff5722;
+      font-weight: bold;
+    }
+
+    /* Button styling */
+    .buy-btn {
+      background-color: #ff5722;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    .buy-btn:hover {
+      background-color: #e64a19;
+    }
+
+    /* Total price display */
+    .total-price {
+      margin-top: 30px;
+      font-size: 1.5rem;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    .product-list {
+      margin-bottom: 30px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Product List</h1>
+  <div class="product-container" id="product-container"></div>
+
+  <!-- Total price display -->
+  <div class="total-price" id="total-price">Total Price: $0</div>
+  <div id="selected-products" class="product-list">Selected Products: </div>
+
+  <script>
+    // Array to store the total price and selected product names
+    let totalPrice = 0;
+    let selectedProducts = [];
+
+    // Fetch data from FakeStoreAPI
+    fetch('https://fakestoreapi.com/products?limit=10')
+      .then(response => response.json())  // Parse JSON response
+      .then(data => {
+        const productContainer = document.getElementById('product-container');
+
+        // Display the data
+        data.forEach(product => {
+          const productDiv = document.createElement('div');
+          productDiv.classList.add('product');
+
+          // Add product title, price, and image
+          const title = document.createElement('h3');
+          title.textContent = product.title;
+
+          const price = document.createElement('p');
+          price.textContent = `Price: $${product.price}`;
+          price.classList.add('price');
+
+          const img = document.createElement('img');
+          img.src = product.image;
+          img.alt = product.title;
+
+          // Create a 'Buy Now' button
+          const buyBtn = document.createElement('button');
+          buyBtn.classList.add('buy-btn');
+          buyBtn.textContent = 'Buy Now';
+
+          // Button click event to update total price and selected products
+          buyBtn.addEventListener('click', () => {
+            totalPrice += product.price;  // Add product price to total
+            selectedProducts.push(product.title);  // Add product name to the selected list
+            document.getElementById('total-price').textContent = `Total Price: $${totalPrice.toFixed(2)}`;
+
+            // Update the list of selected products
+            document.getElementById('selected-products').textContent = 'Selected Products: ' + selectedProducts.join(', ');
+          });
+
+          // Append title, price, image, and button to the product div
+          productDiv.appendChild(img);
+          productDiv.appendChild(title);
+          productDiv.appendChild(price);
+          productDiv.appendChild(buyBtn);
+
+          // Append the product div to the container
+          productContainer.appendChild(productDiv);
+        });
+      })
+      .catch(error => console.error('Error fetching data:', error));
+  </script>
+</body>
+</html>
